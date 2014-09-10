@@ -1,0 +1,27 @@
+---
+- hosts: vagrant
+  sudo: true
+  user: vagrant
+  roles:
+    - common
+    - mysql
+    - redis
+    - nginx
+    - python
+  vars:
+    local:
+      dir: /usr/local
+      src: /usr/local/src
+    #unixusers:
+    #  - username: webapp
+    #    shell: /bin/bash
+    #    group: webapp
+    #    groups: webapp
+    #    home: /home/webapp
+    #    password: $1$SomeSalt$A4dqtxmVtUL1R/NjQ.zWO1
+    python:
+      version: 2.7.8
+    redis:
+      version: 2.8.14
+    nginx:
+      version: 1.7.4

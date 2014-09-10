@@ -1,0 +1,28 @@
+---
+- name: download redis source
+  get_url: url=http://download.redis.io/releases/redis-{{ redis.version }}.tar.gz dest=/tmp
+
+- name: unarchive tar.gz
+  command: tar xvfz redis-{{ redis.version }}.tar.gz chdir=/tmp creates=/tmp/redis-{{ redis.version }}
+
+- name: install redis
+  shell: make chdir=/tmp/redis-{{ redis.version }} creates=/tmp/redis-{{ redis.version }}/src/redis-server
+  tags: redis
+
+- name: move compiled redis binaries
+  command: cp -f {{ item }} /usr/local/bin chdir=/tmp/redis-{{ redis.version }}/src creates=/usr/local/bin/{{ item }}
+  with_items:
+    - redis-cli
+    - redis-server
+    - redis-benchmark
+
+- name: configure redis-server
+  template: src=redis.conf.j2 dest=/etc/redis.conf
+  notify:
+  - restart redis
+
+- name: make redis a service
+  template: src=redis_init_script.j2 dest=/etc/init.d/redis mode=755
+
+- name: run redis
+  shell: /etc/init.d/redis start creates=/var/run/redis.pid

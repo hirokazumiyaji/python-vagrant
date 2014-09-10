@@ -1,0 +1,16 @@
+---
+- name: be sure mysql repository is installed
+  yum: name=http://dev.mysql.com/get/mysql-community-release-el6-5.noarch.rpm state=present
+
+- name: Install mysql
+  yum: name={{ item }} state=installed enablerepo=mysql56-community
+  with_items:
+    - mysql-community-server
+    - mysql-community-devel
+
+- name: mysql dir chmod
+  shell: |
+    chown -R mysql:mysql /var/lib/mysql
+
+- name: mysql restart
+  command: service mysqld restart
